@@ -14,8 +14,7 @@ const lightbox = new SimpleLightbox('.gallery a', {
 });
 const loadButton = document.querySelector(".load-button");
 const imgLimit = 40;
-let pages = 1;
-const httpParams = {
+const searchParams = {
     params: {
         key: "41831359-da2252ca47ee8686c562d4834",
         q: "",
@@ -23,7 +22,7 @@ const httpParams = {
         orientation: "horizontal",
         safesearch: "true",
         per_page: imgLimit,
-        page: pages
+        page: 1
     }
 }
 const imgHTML = (resolve) => {
@@ -56,14 +55,13 @@ const imgHTML = (resolve) => {
 }
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    pages = 1;
-    httpParams.params.page = pages;
-    httpParams.params.q = searchInput.value;
+    searchParams.params.page = 1;
+    searchParams.params.q = searchInput.value;
     loader.classList.remove("is-hidden");
     loadButton.classList.add("is-hidden");
     gallery.innerHTML = "";
     try {
-        const resolve = await axios.get(`https://pixabay.com/api/`, httpParams);
+        const resolve = await axios.get(`https://pixabay.com/api/`, searchParams);
         if (resolve.data.hits.length > 0) {   
             gallery.innerHTML = imgHTML(resolve);
             loadButton.classList.remove("is-hidden")
@@ -86,11 +84,10 @@ form.addEventListener("submit", async (event) => {
 });
 loadButton.addEventListener("click", async (event) => {
     event.preventDefault();
-    pages += 1;
-    httpParams.params.page = pages;
-    const resolve = await axios.get(`https://pixabay.com/api/`, httpParams);
-    if (pages <= Math.ceil(resolve.data.totalHits / imgLimit)) {
-        gallery.insertAdjacentHTML("beforeend", imgHTML(resolve));
+    searchParams.params.page += 1;
+    const response = await axios.get(`https://pixabay.com/api/`, searchParams);
+    if (searchParams.params.page <= Math.ceil(response.data.totalHits / imgLimit)) {
+        gallery.insertAdjacentHTML("beforeend", imgHTML(response));
         lightbox.refresh();
         const galleryItem = document.querySelector(".gallery-item");
         scrollBy({
