@@ -89,8 +89,9 @@ loadButton.addEventListener("click", async (event) => {
     pages += 1;
     httpParams.params.page = pages;
     const resolve = await axios.get(`https://pixabay.com/api/`, httpParams);
-    if (pages < Math.ceil(resolve.data.totalHits / imgLimit)) {
+    if (pages <= Math.ceil(resolve.data.totalHits / imgLimit)) {
         gallery.insertAdjacentHTML("beforeend", imgHTML(resolve));
+        lightbox.refresh();
         const galleryItem = document.querySelector(".gallery-item");
         scrollBy({
             top: galleryItem.getBoundingClientRect().height * 2,
